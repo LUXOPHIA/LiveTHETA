@@ -1,0 +1,87 @@
+static float4x4 _FMatrixMVP = transpose( FMatrixMVP );
+static float4x4 _FMatrixMV  = transpose( FMatrixMV  );
+static float4x4 _IMatrixMV  = transpose( IMatrixMV  );
+
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【定数】
+
+static const float Pi = 3.141592653589793;
+
+static const float Pi2 = Pi * 2.0;
+
+static const float P2i = Pi / 2.0;
+
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【設定】
+
+SamplerState _SamplerState {};
+
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【ルーチン】
+
+//##############################################################################
+
+struct TSenderP               //フラグメントの変数型
+{
+    float4 Scr :SV_Position;  //位置（スクリーン）
+    float4 Pos :TEXCOORD0;    //位置（グローバル）
+    float4 Nor :NORMAL;       //法線（グローバル）
+    float4 Tex :TEXCOORD1;    //テクスチャ座標
+};
+
+struct TResultP               //ピクセルの変数型
+{
+    float4 Col :SV_Target;    //色
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+TResultP MainP( TSenderP _Sender )
+{
+    TResultP _Result;
+
+    const float VideoW = 1920.0;
+    const float VideoH = 1080.0;
+    const float Radius =  425.0;
+
+    const float W1 = VideoW / 4.0;
+    const float W3 = 3.0 * W1;
+
+    float  L, A, B;
+    float2 S, P, P1, P2, T1, T2;
+    float3 V;
+    float4 C1, C2;
+
+    S.x = Pi2 * _Sender.Tex.x - Pi;
+    S.y = P2i - Pi * _Sender.Tex.y;
+
+    L   = cos( S.y );
+    V.x = L * cos( S.x );
+    V.y = L * sin( S.x );
+    V.z = sin( S.y );
+
+    A = asin( V.y ) / P2i;
+
+    B = ( 1.0 + clamp( A / 0.02, -1.0, +1.0 ) ) / 2.0;
+
+    P.x = V.x;
+    P.y = V.z;
+    P = Radius * normalize( P );
+
+    P1 = ( 1 - A ) * P;
+    P2 = ( 1 + A ) * P;
+
+    T1.x = ( W1 - P2.y ) / VideoW;
+    T1.y = ( W1 + P2.x ) / VideoH;
+
+    T2.x = ( W3 + P1.y ) / VideoW;
+    T2.y = ( W1 + P1.x ) / VideoH;
+
+    C1 = _Texture.Sample( _SamplerState, T1 );
+    C2 = _Texture.Sample( _SamplerState, T2 );
+
+    _Result.Col = ( C2 - C1 ) * B + C1;
+
+    _Result.Col = _Opacity * _Result.Col;
+
+    return _Result;
+}
+
+//##############################################################################
