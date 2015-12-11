@@ -1,0 +1,60 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'LiveTHETA'
+  ClientHeight = 470
+  ClientWidth = 820
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object Viewport3D1: TViewport3D
+    Align = Client
+    Camera = Camera1
+    Color = claDimgray
+    Margins.Left = 10.000000000000000000
+    Margins.Top = 10.000000000000000000
+    Margins.Right = 10.000000000000000000
+    Margins.Bottom = 10.000000000000000000
+    Size.Width = 800.000000000000000000
+    Size.Height = 450.000000000000000000
+    Size.PlatformDefault = False
+    UsingDesignCamera = False
+    OnMouseDown = Viewport3D1MouseDown
+    OnMouseMove = Viewport3D1MouseMove
+    OnMouseUp = Viewport3D1MouseUp
+    object Dummy1: TDummy
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+      object Dummy2: TDummy
+        Width = 1.000000000000000000
+        Height = 1.000000000000000000
+        Depth = 1.000000000000000000
+        object Camera1: TCamera
+          AngleOfView = 90.000000000000000000
+          Position.Z = -5.000000000000000000
+          Width = 1.000000000000000000
+          Height = 1.000000000000000000
+          Depth = 1.000000000000000000
+        end
+      end
+    end
+    object Sphere1: TSphere
+      Width = 10.000000000000000000
+      Height = 10.000000000000000000
+      Depth = 10.000000000000000000
+      HitTest = False
+      TwoSide = True
+      SubdivisionsAxes = 50
+      SubdivisionsHeight = 50
+    end
+  end
+  object CameraComponent1: TCameraComponent
+    OnSampleBufferReady = CameraComponent1SampleBufferReady
+    Left = 65
+    Top = 25
+  end
+end
